@@ -16,6 +16,9 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,13 +44,12 @@ public class SocketModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void startServer(Integer port, Promise result) {
         String ipAddress = Utils.getIPAddress(true);
-        InetSocketAddress inetSockAddress = new InetSocketAddress(ipAddress, port);
+        InetSocketAddress inetSockAddress = new InetSocketAddress(port);
         //InetSocketAddress inetSockAddress = new InetSocketAddress("10.0.0.15", port);
         server = new SocketServer(inetSockAddress, reactContext);
         try {
             server.start();
-            Log.d("Server address", server.getAddress().toString());
-            result.resolve(server.getAddress().toString());
+            result.resolve("ws://" + ipAddress + ":" + port);
         } catch (IllegalStateException ise) {
             ise.printStackTrace();
             result.reject(ise);
@@ -55,13 +57,39 @@ public class SocketModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void broadcastMessage(String message) {
+        server.broadcastMessage(message);
+    }
+
+    @ReactMethod
     public void attachClient(String uri, Promise result) throws URISyntaxException {
         try {
             client = new SocketClient(new URI(uri), reactContext);
-            client.connect();
-            result.resolve("Client connected");
-        } catch (IllegalStateException ise) {
+            boolean connected = client.connectBlocking();
+            result.resolve(connected);
+        } catch (IllegalStateException | InterruptedException ise) {
             result.reject(ise);
+        }
+    }
+
+    @ReactMethod
+    public void sendMessage(String message) {
+        client.sendMessage(message);
+    }
+
+    @ReactMethod
+    public void disconnectClient() {
+        client.close();
+    }
+
+    @ReactMethod
+    public void stopServer(Promise result) {
+        try {
+            server.stop();
+            result.resolve(true);
+        } catch (InterruptedException e) {
+            result.reject(e);
+            e.printStackTrace();
         }
     }
 }

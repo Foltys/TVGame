@@ -8,108 +8,124 @@
  * @format
  */
 
-import React, { useEffect, useState, type PropsWithChildren } from 'react'
+import React, { useState } from 'react'
 import {
 	SafeAreaView,
 	ScrollView,
-	StatusBar,
 	StyleSheet,
 	Text,
 	useColorScheme,
 	View,
-	DeviceEventEmitter,
+	TextInput,
+	TouchableHighlight,
+	TouchableNativeFeedback,
 } from 'react-native'
 
-import {
-	Colors,
-	DebugInstructions,
-	Header,
-	LearnMoreLinks,
-	ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen'
+import { Colors, Header } from 'react-native/Libraries/NewAppScreen'
 
 import { SocketModuleServer, SocketModuleClient } from './modules/SocketModule'
 const server = new SocketModuleServer()
 const client = new SocketModuleClient()
 
 import { Platform } from 'react-native'
-
-const Section: React.FC<
-	PropsWithChildren<{
-		title: string
-		messages: string[]
-	}>
-> = ({ children, title, messages }) => {
-	const isDarkMode = useColorScheme() === 'dark'
-	return (
-		<View style={styles.sectionContainer}>
-			<Text
-				style={[
-					styles.sectionTitle,
-					{
-						color: isDarkMode ? Colors.white : Colors.black,
-					},
-				]}
-			>
-				{title}
-			</Text>
-			{messages.map((message, index) => {
-				return <Text key={index}>{message}</Text>
-			})}
-		</View>
-	)
-}
+import Client from './components/client'
+import Server from './components/server'
+import { FocusableButton } from './components/Focusables'
 
 const App = () => {
-	const [messages, setMessages] = useState<string[]>([])
-	const [connectedToServer, setConnectedToServer] = useState<boolean>(false)
+	const [eventLog, setEventLog] = useState<string[]>([])
+	const [clientAddress, setClientAddress] = useState<string>('ws://192.168.0.142:5883')
+	const [serverPort, setServerPort] = useState<number>(5993)
+	const [connectionType, setConnectionType] = useState<'server' | 'client'>()
 
-	useEffect(() => {
-		console.log('Triggered use effect')
-		if (!connectedToServer) {
-			server
-				.startServer(8431)
-				.then((ip: string) => {
-					console.log({ ip })
-					setConnectedToServer(true)
-					server.addListener('ServerOnMessage', (msg: string) => {
-						console.log({ msg })
-						messages.push(msg)
-						setMessages([...messages])
-					})
-					client.addListener('ClientOnMessage', (msg: string) => {
-						console.log({ msg })
-					})
-					return client.attachClient(`ws:/${ip}`)
-				})
-				.then(console.log)
-				.catch(console.error)
+	function attachClientLogger() {
+		client.addListener('ClientOnClose', (message: string) => {
+			logEvent(message, 'ClientOnClose')
+		})
+		client.addListener('ClientOnError', (message: string) => {
+			logEvent(message, 'ClientOnError')
+		})
+		client.addListener('ClientOnMessage', (message: string) => {
+			logEvent(message, 'ClientOnMessage')
+		})
+		client.addListener('ClientOnOpen', (message: string) => {
+			logEvent(message, 'ClientOnOpen')
+		})
+	}
+
+	function attachServerLogger() {
+		server.addListener('ServerOnClose', (message: string) => {
+			logEvent(message, 'ServerOnClose')
+		})
+		server.addListener('ServerOnError', (message: string) => {
+			logEvent(message, 'ServerOnError')
+		})
+		server.addListener('ServerOnMessage', (message: string) => {
+			console.log(message)
+			logEvent(message, 'ServerOnMessage')
+		})
+		server.addListener('ServerOnStart', (message: string) => {
+			logEvent(message, 'ServerOnStart')
+		})
+	}
+
+	function logEvent(text: string, tag?: string) {
+		eventLog.push(`[${tag}]  ${text}`)
+		setEventLog([...eventLog])
+	}
+	function logError(text: string) {
+		logEvent(`error: ${text}`)
+	}
+
+	function MainContainer(props: { connectionType?: string }) {
+		if (connectionType == 'server') {
+			return (
+				<>
+					<Text>Server started</Text>
+				</>
+			)
+		} else if (connectionType == 'client') {
+			return (
+				<>
+					<Text>Client connected</Text>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<FocusableButton
+						onPress={() => {
+							server.startServer(serverPort || 5993).then((serverAddress) => {
+								logEvent('Server started at device address: ' + serverAddress, 'server')
+								attachServerLogger()
+							})
+							setConnectionType('server')
+						}}
+						title="Create server"
+					/>
+
+					<FocusableButton
+						onPress={() => {
+							attachClientLogger()
+							//TODO: create the client connection
+						}}
+						title="Connect as client"
+					/>
+				</>
+			)
 		}
-	}, [])
-	const isDarkMode = useColorScheme() === 'dark'
-
-	let running_on_android_tv = Platform.isTV
-
-	const backgroundStyle = {
-		backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
 	}
 
 	return (
-		<SafeAreaView style={backgroundStyle}>
-			<StatusBar
-				barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-				backgroundColor={backgroundStyle.backgroundColor}
-			/>
-			<ScrollView contentInsetAdjustmentBehavior="automatic" style={backgroundStyle}>
-				<Header />
-				<View
-					style={{
-						backgroundColor: isDarkMode ? Colors.black : Colors.white,
-					}}
-				>
-					<Section title="Step One" messages={messages}>
-						Running on tv: {running_on_android_tv.toString()}
-					</Section>
+		<SafeAreaView style={styles.container}>
+			<ScrollView contentInsetAdjustmentBehavior="automatic">
+				<View style={styles.containerSection}>
+					{eventLog.map((event, index) => {
+						return <Text key={index}>{event}</Text>
+					})}
+				</View>
+				<View style={styles.containerSection}>
+					<MainContainer connectionType={connectionType} />
 				</View>
 			</ScrollView>
 		</SafeAreaView>
@@ -117,21 +133,16 @@ const App = () => {
 }
 
 const styles = StyleSheet.create({
-	sectionContainer: {
-		marginTop: 32,
-		paddingHorizontal: 24,
+	container: {
+		backgroundColor: '#E4D0D9',
+		flexDirection: 'row',
+		flex: 1,
 	},
-	sectionTitle: {
-		fontSize: 24,
-		fontWeight: '600',
-	},
-	sectionDescription: {
-		marginTop: 8,
-		fontSize: 18,
-		fontWeight: '400',
-	},
-	highlight: {
-		fontWeight: '700',
+	containerSection: {
+		flex: 1,
+		padding: 15,
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 })
 

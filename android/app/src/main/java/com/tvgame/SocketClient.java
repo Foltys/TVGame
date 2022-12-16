@@ -1,6 +1,7 @@
 package com.tvgame;
 
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.java_websocket.client.WebSocketClient;
@@ -10,31 +11,36 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 
 public class SocketClient extends WebSocketClient {
-    DeviceEventManagerModule.RCTDeviceEventEmitter emitter;
+    ReactApplicationContext reactContext;
 
     public SocketClient(URI uri, ReactApplicationContext reactContext) {
         super(uri);
-        emitter = reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
+        this.reactContext = reactContext;
     }
 
     @Override
     public void onOpen(ServerHandshake handshakedata) {
-        emitter.emit("ClientOnOpen", handshakedata.getHttpStatusMessage());
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ClientOnOpen", handshakedata.getHttpStatusMessage());
     }
 
     @Override
     public void onMessage(String message) {
-        emitter.emit("ClientOnMessage", message);
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ClientOnMessage", message);
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        emitter.emit("ClientOnClose", "Connection closed with code" + code + " and reason " + reason + " by " + (remote ? "host" : "client"));
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ClientOnClose", "Connection closed with code" + code + " and reason " + reason + " by " + (remote ? "host" : "client"));
     }
 
     @Override
     public void onError(Exception ex) {
         ex.printStackTrace();
-        emitter.emit("ClientOnError", ex.getMessage());
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ClientOnError", ex.getMessage());
+    }
+
+
+    public void sendMessage(String message) {
+        this.send(message);
     }
 }

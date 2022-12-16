@@ -1,4 +1,8 @@
 package com.tvgame; // replace your-app-name with your app’s name
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -15,6 +19,7 @@ public class MyAppPackage implements ReactPackage {
         return Collections.emptyList();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public List<NativeModule> createNativeModules(
             ReactApplicationContext reactContext) {
