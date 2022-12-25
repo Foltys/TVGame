@@ -26,15 +26,13 @@ public class SocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         conn.send("Welcome to the server");
-        Log.d("New connection", conn.getLocalSocketAddress().toString() + conn.getRemoteSocketAddress().toString());
-        broadcast("new connection: " + handshake.getResourceDescriptor());
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ServerOnOpen", "Connection opened " + conn.getRemoteSocketAddress().toString());
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ServerOnOpen", conn.getRemoteSocketAddress().toString());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         Log.d("ServerOnClose", "Connection closed with code" + code + " and reason " + reason + " by " + (remote ? "host" : "client"));
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ServerOnClose", "Connection closed with code" + code + " and reason " + reason + " by " + (remote ? "host" : "client"));
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ServerOnClose", conn.getRemoteSocketAddress().toString());
     }
 
     @Override
@@ -52,11 +50,13 @@ public class SocketServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ServerOnStart", "Server Started");
+        String ipAddress = Utils.getIPAddress(true);
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ServerOnStart", ipAddress);
     }
 
     public void broadcastMessage(String message) {
         Log.d("Server broadcasts", message);
         this.broadcast(message);
     }
+
 }
