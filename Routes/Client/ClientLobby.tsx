@@ -32,6 +32,7 @@ const ClientLobby = ({ navigation }: ClientLobbyParams) => {
 				style={styles.okButton}
 				onPress={() => {
 					SocketModuleClient.getInstance().name = name
+					SocketModuleClient.getInstance().sendJson({ setName: name })
 				}}
 			>
 				<Text>Set name</Text>

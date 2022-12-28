@@ -5,10 +5,11 @@ const { SocketModule: SocketModuleJava } = NativeModules
 type ServerEvents = 'ServerOnClose' | 'ServerOnMessage' | 'ServerOnError' | 'ServerOnStart' | 'ServerOnOpen'
 type ClientEvents = 'ClientOnOpen' | 'ClientOnMessage' | 'ClientOnClose' | 'ClientOnError'
 
-type JsonMessageKeys = 'setName' | 'input' | 'gameStart'
-type GameAdapters = 'AnswersAdapter'
-type JsonMessage = {
-	[k in JsonMessageKeys]: k extends 'gameStart' ? GameAdapters : string
+type GameAdapters = '2x2'
+export interface JsonMessage {
+	setName?: string
+	input?: string
+	adapter?: GameAdapters
 }
 
 let socketModuleServerInstance: SocketModuleServer | null = null
@@ -32,13 +33,13 @@ class SocketModuleServer extends NativeEventEmitter {
 	addListener(type: ServerEvents, listener: (data: any) => void, context?: any): EmitterSubscription {
 		return super.addListener(type, listener, context)
 	}
-	addJsonListener(listener: (data: JsonMessage) => void, context?: any): EmitterSubscription {
+	addJsonListener(listener: (id: string, data: JsonMessage) => void, context?: any): EmitterSubscription {
 		return super.addListener(
 			'ServerOnMessage',
-			(data: any) => {
+			(data: { id: string; message: string }) => {
 				try {
-					listener(JSON.parse(data))
-				} catch (_e) {}
+					listener(data.id, JSON.parse(data.message))
+				} catch {}
 			},
 			context,
 		)
@@ -52,7 +53,10 @@ class SocketModuleServer extends NativeEventEmitter {
 			sub.remove()
 		})
 	}
-	broadcastMessage(message: string): void {
+	broadcastMessage(message: string | JsonMessage): void {
+		if (typeof message != 'string') {
+			JSON.stringify(message)
+		}
 		return SocketModuleJava.broadcastMessage(message)
 	}
 	stop() {
@@ -83,11 +87,6 @@ class SocketModuleClient extends NativeEventEmitter {
 		}
 		return socketModuleClient
 	}
-
-	setName(name: string) {
-		this.name = name
-		this.sendJson({ name })
-	}
 	addListener(type: ClientEvents, listener: (data: any) => void, context?: any): EmitterSubscription {
 		return super.addListener(type, listener, context)
 	}
@@ -97,7 +96,7 @@ class SocketModuleClient extends NativeEventEmitter {
 			(data: any) => {
 				try {
 					listener(JSON.parse(data))
-				} catch (_e) {}
+				} catch {}
 			},
 			context,
 		)
@@ -114,7 +113,7 @@ class SocketModuleClient extends NativeEventEmitter {
 	sendMessage(message: string): void {
 		return SocketModuleJava.sendMessage(message)
 	}
-	sendJson(json: { [k: string]: any }) {
+	sendJson(json: JsonMessage) {
 		return SocketModuleJava.sendMessage(JSON.stringify(json))
 	}
 	disconnect(): void {

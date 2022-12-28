@@ -10,6 +10,7 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
 
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -55,7 +56,7 @@ public class SocketModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void sendMessage(String message) {
-        client.sendMessage(message);
+        client.send(message);
     }
 
     @ReactMethod

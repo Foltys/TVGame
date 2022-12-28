@@ -38,9 +38,4 @@ public class SocketClient extends WebSocketClient {
         ex.printStackTrace();
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("ClientOnError", ex.getMessage());
     }
-
-
-    public void sendMessage(String message) {
-        this.send(message);
-    }
 }

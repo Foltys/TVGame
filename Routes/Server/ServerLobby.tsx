@@ -12,15 +12,23 @@ type ServerLobbyProps = NativeStackScreenProps<ServerNavigatorStackParams, 'Serv
 
 const ServerLobby = ({ navigation }: ServerLobbyProps) => {
 	useEffect(() => {
-		const newPlayerListener = SocketModuleServer.getInstance().addListener('ServerOnOpen', (clientAddress) => {
+		const { addListener, addJsonListener, connectedClients } = SocketModuleServer.getInstance()
+		const newPlayerListener = addListener('ServerOnOpen', (clientAddress) => {
 			console.log('new connection: ' + clientAddress)
-			SocketModuleServer.getInstance().connectedClients.set(clientAddress, { name: '' })
-			setPlayers(new Map(SocketModuleServer.getInstance().connectedClients))
+			connectedClients.set(clientAddress, { name: '' })
+			setPlayers(new Map(connectedClients))
 		})
-		SocketModuleServer.getInstance().addListener('ServerOnClose', (clientAddress) => {
+		addListener('ServerOnClose', (clientAddress) => {
 			console.log('client disc ' + clientAddress)
-			SocketModuleServer.getInstance().connectedClients.delete(clientAddress)
-			setPlayers(new Map(SocketModuleServer.getInstance().connectedClients))
+			connectedClients.delete(clientAddress)
+			setPlayers(new Map(connectedClients))
+		})
+		addJsonListener((id, data) => {
+			const client = connectedClients.get(id)
+			if (data.setName && client) {
+				client.name = data.setName
+				setPlayers(new Map(connectedClients))
+			}
 		})
 		return () => {
 			newPlayerListener.remove()

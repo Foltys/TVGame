@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 export type Player = [
 	address: string,
 	player: {
-		name?: string
+		name: string
 	},
 ]
 const PlayerCard = (props: { player?: Player; onPress: () => void }) => {
