@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { AnswersKey, AnswersKeys, QuestionProps } from '../gameComponents/Quiz/Question'
 import questionsFromFile from '../assets/questions'
+import { Answers, useQuizAdapter } from './useAdapter'
+import usePlayersScore, { ScoreBoard } from './usePlayersScore'
+import sleep from '../lib/sleep'
 
 async function fetchNewQuestion() {
 	const pickedQuestion = questionsFromFile[Math.floor(Math.random() * questionsFromFile.length)]
@@ -18,25 +21,33 @@ function markAnswers(answers: string[]): QuestionProps['answers'] {
 		return [AnswersKeys[index], answer]
 	})
 }
-
+type StartGameFc = (difficulty: number) => void
 type NextQuestionFc = (cb: (props: QuestionProps) => void) => void
-type QuizManagerHook = [QuestionProps | undefined, NextQuestionFc]
+type QuizManagerHook = [QuestionProps | undefined, StartGameFc]
 
 function useQuizManager(): QuizManagerHook {
 	const [question, setQuestion] = useState<QuestionProps>()
 	const [correctLetter, setCorrectLetter] = useState<AnswersKey>()
-	const nextQuestion: NextQuestionFc = (cb) => {
+	const [scoreboard, addPoints] = usePlayersScore()
+
+	const waitForAnswers = useQuizAdapter()
+	async function showAnswersAndCalculateScore(playerAnswers:Answers) {
 		setQuestion((currentQuestion) => {
 			currentQuestion && correctLetter && (currentQuestion.showCorrectAnswer = correctLetter)
 			return currentQuestion
 		})
-		fetchNewQuestion().then((newQuestion) => {
-			const { question, answers } = newQuestion
-			setCorrectLetter(newQuestion.correctAnswerLetter)
-			setTimeout(() => {
-				setQuestion({ question, answers })
-				cb({ question, answers })
-			}, 5000)
+		await sleep(5000) // sleep here to show the correct answer for a little while
+
+	}
+	async function nextQuestion() {
+		const newQuestion = await fetchNewQuestion()
+		const { question, answers } = newQuestion
+		setCorrectLetter(newQuestion.correctAnswerLetter)
+		setQuestion({ question, answers })
+		const playerAnswers = await waitForAnswers(30)
+		const scoreToAdd: ScoreBoard = new Map()
+		playerAnswers.forEach((a, key) => {
+			if (a == correctLetter)
 		})
 	}
 

@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import { Answers } from '../../hooks/useAdapter'
 export type AnswersKey = 'A' | 'B' | 'C' | 'D'
 export const AnswersKeys: AnswersKey[] = ['A', 'B', 'C', 'D']
 // type AnswersKey = typeof AnswersKeys
@@ -7,6 +8,7 @@ export type QuestionProps = {
 	question: string
 	showCorrectAnswer?: AnswersKey
 	answers: [AnswersKey, string][]
+	playerAnswers?: Answers
 }
 const Question = (props: QuestionProps) => {
 	return (
@@ -15,11 +17,12 @@ const Question = (props: QuestionProps) => {
 				<Text style={styles.questionText}>{props.question}</Text>
 			</View>
 			<View style={styles.answers}>
-				{props.answers.map(([letter, answer]) => {
+				{props.answers.map(([letter, answer], key) => {
 					return (
-						<View style={styles.answer}>
+						<View style={styles.answer} key={key}>
 							<Text style={styles.answerText}>{letter}</Text>
 							<Text style={styles.answerText}>{answer}</Text>
+							{/* here I should somehow show who answered what */}
 						</View>
 					)
 				})}

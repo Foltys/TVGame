@@ -16,32 +16,34 @@
 import { useEffect, useState } from 'react'
 import { Player } from '../components/PlayerCard'
 import { JsonMessage, SocketModuleServer } from '../modules/SocketModule'
+export type Answers = Map<Player[0], string>
 
 export const useQuizAdapter = function () {
 	const ssInstance = SocketModuleServer.getInstance()
 	ssInstance.broadcastMessage({ adapter: '2x2' })
 
-	const waitForAnswers = (timeoutSeconds: number, options: string[]) => {
-		const answers: Map<Player[0], string> = new Map()
-		function incomingAnswerHandler(id: string, data: JsonMessage) {
-			if (data.input) {
-				answers.set(id, data.input)
-			}
-		}
-		const answersListener = ssInstance.addJsonListener(incomingAnswerHandler)
-		ssInstance.broadcastMessage('unlock')
-		return new Promise((resolve) => {
+	const waitForAnswers = (timeoutSeconds: number) => {
+		return new Promise<Answers>((resolve) => {
+			const answers: Answers = new Map()
+			const answersListener = ssInstance.addJsonListener(incomingAnswerHandler)
+
 			const timeoutFc = setTimeout(() => {
-				while (true) {
-					if (answers.size == ssInstance.connectedClients.size) {
-						clearTimeout(timeoutFc)
-						break
-					}
-				}
-				resolve(answers)
+				return resolve(answers)
 			}, timeoutSeconds * 1000)
+
+			function incomingAnswerHandler(id: string, data: JsonMessage) {
+				if (data.input) {
+					answers.set(id, data.input)
+				}
+				if (answers.size == ssInstance.connectedClients.size) {
+					clearTimeout(timeoutFc)
+					answersListener.remove()
+					return resolve(answers)
+				}
+			}
+			ssInstance.broadcastMessage('unlock')
 		})
 	}
 
-	return [waitForAnswers]
+	return waitForAnswers
 }
