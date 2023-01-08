@@ -31,13 +31,12 @@ function useQuizManager(): QuizManagerHook {
 	const [scoreboard, addPoints] = usePlayersScore()
 
 	const waitForAnswers = useQuizAdapter()
-	async function showAnswersAndCalculateScore(playerAnswers:Answers) {
+	async function showAnswersAndCalculateScore(playerAnswers: Answers) {
 		setQuestion((currentQuestion) => {
 			currentQuestion && correctLetter && (currentQuestion.showCorrectAnswer = correctLetter)
 			return currentQuestion
 		})
 		await sleep(5000) // sleep here to show the correct answer for a little while
-
 	}
 	async function nextQuestion() {
 		const newQuestion = await fetchNewQuestion()
@@ -47,7 +46,8 @@ function useQuizManager(): QuizManagerHook {
 		const playerAnswers = await waitForAnswers(30)
 		const scoreToAdd: ScoreBoard = new Map()
 		playerAnswers.forEach((a, key) => {
-			if (a == correctLetter)
+			if (a == correctLetter) {
+			}
 		})
 	}
 

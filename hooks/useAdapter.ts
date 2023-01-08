@@ -20,7 +20,7 @@ export type Answers = Map<Player[0], string>
 
 export const useQuizAdapter = function () {
 	const ssInstance = SocketModuleServer.getInstance()
-	ssInstance.broadcastMessage({ adapter: '2x2' })
+	ssInstance.broadcastMessage({ adapter: 'QuizAdapter' })
 
 	const waitForAnswers = (timeoutSeconds: number) => {
 		return new Promise<Answers>((resolve) => {

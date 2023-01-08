@@ -11,8 +11,8 @@ const ClientLobby = ({ navigation }: ClientLobbyParams) => {
 	const [name, setName] = useState(SocketModuleClient.getInstance().name)
 	useEffect(() => {
 		const gameStartListener = SocketModuleClient.getInstance().addJsonListener((json) => {
-			if (json.gameStart) {
-				navigation.navigate(json.gameStart)
+			if (json.adapter) {
+				navigation.navigate(json.adapter)
 			}
 		})
 		return () => {

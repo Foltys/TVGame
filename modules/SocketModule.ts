@@ -5,7 +5,7 @@ const { SocketModule: SocketModuleJava } = NativeModules
 type ServerEvents = 'ServerOnClose' | 'ServerOnMessage' | 'ServerOnError' | 'ServerOnStart' | 'ServerOnOpen'
 type ClientEvents = 'ClientOnOpen' | 'ClientOnMessage' | 'ClientOnClose' | 'ClientOnError'
 
-type GameAdapters = '2x2'
+type GameAdapters = 'QuizAdapter'
 export interface JsonMessage {
 	setName?: string
 	input?: string

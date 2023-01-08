@@ -6,7 +6,7 @@ import ClientLobby from './ClientLobby'
 
 export type ClientNavigatorStackParams = {
 	ClientJoin: undefined
-	AnswersAdapter: undefined
+	QuizAdapter: undefined
 	ClientLobby: undefined
 }
 
@@ -17,7 +17,7 @@ const ClientNavigator = () => {
 		<ClientNavigatorStack.Navigator initialRouteName="ClientJoin" screenOptions={{ headerShown: false }}>
 			<ClientNavigatorStack.Screen name="ClientJoin" component={ClientJoin}></ClientNavigatorStack.Screen>
 			<ClientNavigatorStack.Screen name="ClientLobby" component={ClientLobby}></ClientNavigatorStack.Screen>
-			<ClientNavigatorStack.Screen name="AnswersAdapter" component={React.PureComponent}></ClientNavigatorStack.Screen>
+			<ClientNavigatorStack.Screen name="QuizAdapter" component={React.PureComponent}></ClientNavigatorStack.Screen>
 		</ClientNavigatorStack.Navigator>
 	)
 }
