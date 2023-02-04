@@ -1,4 +1,6 @@
 import React from 'react'
+import { StyleSheet, Text, View } from 'react-native'
+import QuizManager from '../../../../gameComponents/Quiz/QuizManager'
 /**
  *
  * Shows a board wrapped in a show players component.
@@ -10,5 +12,7 @@ import React from 'react'
  */
 
 const Quiz = () => {
-	return <></>
+	return <QuizManager />
 }
+
+export default Quiz

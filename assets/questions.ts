@@ -19,7 +19,7 @@ export default [
 		category: 'General Knowledge',
 		type: 'multiple',
 		difficulty: 'medium',
-		question: 'What is a &quot;dakimakura&quot;?',
+		question: 'What is a "dakimakura"?',
 		correct_answer: 'A body pillow',
 		incorrect_answers: [
 			'A Chinese meal, essentially composed of fish',
@@ -56,7 +56,7 @@ export default [
 		type: 'multiple',
 		difficulty: 'easy',
 		question:
-			'&quot;The Singing Cowboy&quot; Gene Autry is credited with the first recording for all but which classic Christmas jingle?',
+			'"The Singing Cowboy" Gene Autry is credited with the first recording for all but which classic Christmas jingle?',
 		correct_answer: 'White Christmas',
 		incorrect_answers: ['Frosty the Snowman', 'Rudolph the Red-Nosed Reindeer', 'Here Comes Santa Claus'],
 	},
@@ -64,8 +64,7 @@ export default [
 		category: 'Entertainment: Video Games',
 		type: 'multiple',
 		difficulty: 'medium',
-		question:
-			'What is the perk that was introduced in the &quot;Call Of Duty: Zombies&quot; map, &quot;Mob Of The Dead&quot;?',
+		question: 'What is the perk that was introduced in the "Call Of Duty: Zombies" map, "Mob Of The Dead"?',
 		correct_answer: 'Electric Cherry',
 		incorrect_answers: ['Quick Revive', 'Vulture Aid', 'Tombstone'],
 	},

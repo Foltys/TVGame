@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
+import { View, Text, StyleSheet, Image } from 'react-native'
+import { FocusableButton } from './Focusables'
 
 export type Player = [
 	address: string,
@@ -12,13 +13,13 @@ const PlayerCard = (props: { player?: Player; onPress: () => void }) => {
 	const name = player ? player[1].name : null
 
 	return (
-		<TouchableOpacity style={styles.playerCard} onPress={onPress}>
+		<FocusableButton style={styles.playerCard} onPress={onPress}>
 			<Image
 				style={styles.playerImage}
 				source={name != null ? require('./../assets/player-active.png') : require('./../assets/player-inactive.png')}
 			/>
 			<Text style={styles.playerLabel}>{player ? name || player[0] : 'Join'}</Text>
-		</TouchableOpacity>
+		</FocusableButton>
 	)
 }
 

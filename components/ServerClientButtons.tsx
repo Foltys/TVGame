@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { View, StyleSheet, Button } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { SocketModuleClient, SocketModuleServer } from '../modules/SocketModule'
+import React from 'react'
+import { View, StyleSheet, Text } from 'react-native'
+import { SocketModuleServer } from '../modules/SocketModule'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParams } from '../App'
+import { FocusableButton } from './Focusables'
 
 type HomeViewProps = NativeStackScreenProps<RootStackParams, 'Home'>
 
@@ -15,18 +15,16 @@ const ServerClientButtons = (props: HomeViewProps) => {
 			navigation.navigate('ServerNavigator', { screen: 'ServerLobby' })
 		})
 	}
+	const handleJoinClient = () => navigation.navigate('ClientNavigator', { screen: 'ClientJoin' })
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.buttonContainer}>
-				<Button title="Start Server" onPress={handleStartServer} />
-			</View>
-			<View style={styles.buttonContainer}>
-				<Button
-					title="Join as Client"
-					onPress={() => navigation.navigate('ClientNavigator', { screen: 'ClientJoin' })}
-				/>
-			</View>
+			<FocusableButton style={styles.buttonContainer} onPress={handleStartServer} initialFocus>
+				<Text adjustsFontSizeToFit>Start Server</Text>
+			</FocusableButton>
+			<FocusableButton style={styles.buttonContainer} onPress={handleJoinClient}>
+				<Text adjustsFontSizeToFit>Join as Client</Text>
+			</FocusableButton>
 		</View>
 	)
 }
@@ -35,13 +33,14 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		alignItems: 'center',
-		justifyContent: 'center',
+		justifyContent: 'space-around',
 	},
 	buttonContainer: {
-		width: '50%',
-		height: '50%',
+		width: '45%',
+		height: '45%',
 		alignItems: 'center',
 		justifyContent: 'center',
+		borderRadius: 15,
 	},
 })
 

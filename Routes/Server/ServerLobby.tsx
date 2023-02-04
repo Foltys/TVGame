@@ -3,6 +3,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import { RootStackParams } from '../../App'
+import { FocusableButton } from '../../components/Focusables'
 import PlayerCard, { Player } from '../../components/PlayerCard'
 import { SocketModuleServer } from '../../modules/SocketModule'
 import { GameNavigatorStackParams } from './Games/GameNavigator'
@@ -43,14 +44,15 @@ const ServerLobby = ({ navigation }: ServerLobbyProps) => {
 			<View style={styles.topHalf}>
 				<Text style={styles.addressLineLabel}>To connect, write this in your phone.</Text>
 				<Text style={styles.addressLine}>{SocketModuleServer.getInstance().address}</Text>
-				<TouchableOpacity
+				<FocusableButton
 					style={styles.proceedButton}
 					onPress={() => {
 						navigation.navigate('GameNavigator')
 					}}
+					initialFocus={true}
 				>
-					<Text style={styles.proceedButtonText}>PICK GAME</Text>
-				</TouchableOpacity>
+					<Text>Proceed</Text>
+				</FocusableButton>
 			</View>
 			<View style={styles.bottomHalf}>
 				{[...Array(4)].map((_, index) => {
@@ -111,7 +113,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		padding: 10,
-		borderColor: 'blue',
 		borderRadius: 10,
 		borderWidth: 0.5,
 		backgroundColor: 'azure',

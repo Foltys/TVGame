@@ -20,7 +20,7 @@ const ServerNavigator = () => {
 	}, [])
 	return (
 		<>
-			<ServerStack.Navigator initialRouteName="ServerLobby">
+			<ServerStack.Navigator initialRouteName="ServerLobby" screenOptions={{ headerShown: false }}>
 				<ServerStack.Screen name="ServerLobby" component={ServerLobby}></ServerStack.Screen>
 				<ServerStack.Screen name="GameNavigator" component={GameNavigator}></ServerStack.Screen>
 			</ServerStack.Navigator>

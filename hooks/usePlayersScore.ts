@@ -3,8 +3,8 @@ import { Player } from '../components/PlayerCard'
 
 export type ScoreBoard = Map<Player[0], number>
 
-function usePlayersScore() {
-	const [scoreboard, setScoreboard] = useState<ScoreBoard>(new Map())
+function usePlayersScore(players: string[]): [ScoreBoard, (points: ScoreBoard) => void] {
+	const [scoreboard, setScoreboard] = useState<ScoreBoard>(new Map([...players].map((player) => [player, 0])))
 
 	function addPoints(points: ScoreBoard) {
 		setScoreboard((currentScore) => {

@@ -8,7 +8,7 @@ type ClientEvents = 'ClientOnOpen' | 'ClientOnMessage' | 'ClientOnClose' | 'Clie
 type GameAdapters = 'QuizAdapter'
 export interface JsonMessage {
 	setName?: string
-	input?: string
+	input?: string | number
 	adapter?: GameAdapters
 }
 
@@ -36,9 +36,9 @@ class SocketModuleServer extends NativeEventEmitter {
 	addJsonListener(listener: (id: string, data: JsonMessage) => void, context?: any): EmitterSubscription {
 		return super.addListener(
 			'ServerOnMessage',
-			(data: { id: string; message: string }) => {
+			({ id, message }: { id: string; message: string }) => {
 				try {
-					listener(data.id, JSON.parse(data.message))
+					listener(id, JSON.parse(message))
 				} catch {}
 			},
 			context,
@@ -55,7 +55,7 @@ class SocketModuleServer extends NativeEventEmitter {
 	}
 	broadcastMessage(message: string | JsonMessage): void {
 		if (typeof message != 'string') {
-			JSON.stringify(message)
+			message = JSON.stringify(message)
 		}
 		return SocketModuleJava.broadcastMessage(message)
 	}

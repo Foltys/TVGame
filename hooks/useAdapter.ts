@@ -27,22 +27,31 @@ export const useQuizAdapter = function () {
 			const answers: Answers = new Map()
 			const answersListener = ssInstance.addJsonListener(incomingAnswerHandler)
 
-			const timeoutFc = setTimeout(() => {
+			function conclude() {
+				clearTimeout(timeoutFc)
+				answersListener.remove()
 				return resolve(answers)
-			}, timeoutSeconds * 1000)
+			}
+
+			const timeoutFc = setTimeout(conclude, timeoutSeconds * 1000)
 
 			function incomingAnswerHandler(id: string, data: JsonMessage) {
-				if (data.input) {
+				if (data.input && typeof data.input == 'string') {
 					answers.set(id, data.input)
 				}
-				if (answers.size == ssInstance.connectedClients.size) {
-					clearTimeout(timeoutFc)
-					answersListener.remove()
-					return resolve(answers)
-				}
+				hadAllClientsAnswered(answers) && conclude()
 			}
 			ssInstance.broadcastMessage('unlock')
 		})
+	}
+
+	function hadAllClientsAnswered(answers: Answers) {
+		for (const key in ssInstance.connectedClients) {
+			if (!answers.has(key)) {
+				return false
+			}
+		}
+		return true
 	}
 
 	return waitForAnswers

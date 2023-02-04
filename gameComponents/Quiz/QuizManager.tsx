@@ -2,24 +2,25 @@ import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 import Question from './Question'
 import useQuizManager from '../../hooks/useQuizManager'
-import { TouchableHighlight } from 'react-native-gesture-handler'
+import ScoreBoardComponent from '../../components/ScoreBoardComponent'
+import { FocusableButton } from '../../components/Focusables'
 
 const QuizManager = () => {
-	const [question, startQuiz] = useQuizManager()
+	const [question, startQuiz, scoreboard] = useQuizManager()
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.header}></View>
-			<View style={styles.question}>
-				{question ? (
-					<Question {...question}></Question>
-				) : (
-					<TouchableHighlight onPress={() => startQuiz(0)} style={styles.startButton}>
-						<Text adjustsFontSizeToFit>Start Game</Text>
-					</TouchableHighlight>
-				)}
-			</View>
-			<View style={styles.footer}></View>
+			<ScoreBoardComponent score={scoreboard}>
+				<View style={styles.question}>
+					{question ? (
+						<Question {...question}></Question>
+					) : (
+						<FocusableButton onPress={() => startQuiz({ questionCount: 10 })} style={styles.startButton}>
+							<Text>Start Game</Text>
+						</FocusableButton>
+					)}
+				</View>
+			</ScoreBoardComponent>
 		</View>
 	)
 }
@@ -28,9 +29,13 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		padding: 15,
+		width: '100%',
+		height: '100%',
 	},
 	question: {
 		flex: 3,
+		backgroundColor: 'azure',
+		borderRadius: 15,
 	},
 	header: {
 		flex: 1,
@@ -43,4 +48,10 @@ const styles = StyleSheet.create({
 		width: '50%',
 		height: '50%',
 	},
+	startButtonText: {
+		fontSize: 30,
+		margin: 'auto',
+	},
 })
+
+export default QuizManager

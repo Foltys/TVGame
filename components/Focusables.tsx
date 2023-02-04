@@ -1,23 +1,37 @@
-import { useCallback, useState } from 'react'
-import { StyleSheet, Text, TouchableHighlight } from 'react-native'
+import { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
+import { StyleProp, StyleSheet, Text, TouchableHighlight, TouchableHighlightProps, ViewStyle } from 'react-native'
 
-export const FocusableButton = ({ title, onPress }: { title: string; onPress: () => void }) => {
+type FocusableButtonProps = PropsWithChildren<TouchableHighlightProps & { initialFocus?: boolean }>
+export const FocusableButton = ({ onPress, style: extraStyle, children, initialFocus }: FocusableButtonProps) => {
 	const [focus, setFocus] = useState(false)
 
+	const ref = useRef<TouchableHighlight>(null)
+
+	useEffect(() => {
+		console.log({ ref })
+		if (ref != null && initialFocus) {
+			console.log('match')
+			ref.current?.focus()
+			setFocus(true)
+		}
+	}, [ref])
+
 	const onFocus = useCallback(() => {
+		console.log('focusing')
 		setFocus(true)
-	}, [title])
+	}, [])
 	const onBlur = useCallback(() => {
 		setFocus(false)
 	}, [])
 	return (
 		<TouchableHighlight
-			style={[styles.focusableWrapper, focus ? styles.focused : null]}
+			style={[styles.focusableWrapper, focus ? styles.focused : null, extraStyle]}
 			onPress={onPress}
 			onFocus={onFocus}
 			onBlur={onBlur}
+			ref={ref}
 		>
-			<Text style={styles.text}>{title}</Text>
+			<>{children}</>
 		</TouchableHighlight>
 	)
 }
@@ -25,13 +39,13 @@ export const FocusableButton = ({ title, onPress }: { title: string; onPress: ()
 const styles = StyleSheet.create({
 	focusableWrapper: {
 		borderColor: '#9DBF9E',
-		borderWidth: 0.1,
-		backgroundColor: '#D0D6B5',
+		borderWidth: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
 	focused: {
-		borderColor: '#EE7674',
+		borderWidth: 2,
+		borderColor: 'red',
 	},
 	text: {
 		fontSize: 22,

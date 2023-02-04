@@ -1,23 +1,32 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React from 'react'
 import { View, Text, TouchableHighlight, ScrollView, StyleSheet } from 'react-native'
+import { FocusableButton } from '../../../components/Focusables'
+import { GameNavigatorStackParams } from './GameNavigator'
 
 const GameList = [
-	{ id: 1, name: 'Game 1' },
-	{ id: 2, name: 'Game 2' },
-	{ id: 3, name: 'Game 3' },
+	{ id: 1, name: 'Quiz' },
 	// add more games here
 ]
 
-const GamesPicker = () => {
+type GamePickerProps = NativeStackScreenProps<GameNavigatorStackParams, 'GamePicker'>
+
+const GamesPicker = ({ navigation }: GamePickerProps) => {
 	return (
 		<View style={styles.container}>
 			<Text style={styles.header}>Choose Game</Text>
 			<View style={styles.divider} />
 			<ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollViewContent} horizontal>
 				{GameList.map((game) => (
-					<TouchableHighlight key={game.id} style={styles.gameButton}>
-						<Text style={styles.gameText}>{game.name}</Text>
-					</TouchableHighlight>
+					<FocusableButton
+						key={game.id}
+						style={styles.gameButton}
+						onPress={() => {
+							navigation.navigate(game.name as any) //todo: fix
+						}}
+					>
+						<Text>{game.name}</Text>
+					</FocusableButton>
 				))}
 			</ScrollView>
 		</View>
@@ -51,9 +60,6 @@ const styles = StyleSheet.create({
 		margin: 10,
 		backgroundColor: 'lightgray',
 		borderRadius: 5,
-	},
-	gameText: {
-		fontSize: 16,
 	},
 })
 
