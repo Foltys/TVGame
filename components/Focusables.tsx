@@ -1,35 +1,59 @@
+import React from 'react'
 import { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react'
-import { StyleProp, StyleSheet, Text, TouchableHighlight, TouchableHighlightProps, ViewStyle } from 'react-native'
+import {
+	NativeSyntheticEvent,
+	StyleProp,
+	StyleSheet,
+	TargetedEvent,
+	Text,
+	Touchable,
+	TouchableHighlight,
+	TouchableHighlightProps,
+	TouchableOpacityProps,
+	TouchableWithoutFeedback,
+	View,
+	ViewStyle,
+} from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
-type FocusableButtonProps = PropsWithChildren<TouchableHighlightProps & { initialFocus?: boolean }>
-export const FocusableButton = ({ onPress, style: extraStyle, children, initialFocus }: FocusableButtonProps) => {
+type FocusableButtonProps = PropsWithChildren<
+	TouchableHighlightProps & { focusedStyle?: StyleProp<ViewStyle>; initialFocus?: boolean }
+>
+export const FocusableButton = ({
+	onPress,
+	style: extraStyle,
+	focusedStyle,
+	children,
+	initialFocus,
+}: FocusableButtonProps) => {
 	const [focus, setFocus] = useState(false)
 
 	const ref = useRef<TouchableHighlight>(null)
 
-	useEffect(() => {
-		console.log({ ref })
-		if (ref != null && initialFocus) {
-			console.log('match')
-			ref.current?.focus()
-			setFocus(true)
-		}
-	}, [ref])
+	// useEffect(() => {
+	// 	if (ref != null && initialFocus) {
+	// 		ref.current?.focus()
+	// 		setFocus(true)
+	// 	}
+	// }, [ref])
 
-	const onFocus = useCallback(() => {
-		console.log('focusing')
+	const onFocus = useCallback((e: NativeSyntheticEvent<TargetedEvent>) => {
+		console.log({ e })
 		setFocus(true)
 	}, [])
-	const onBlur = useCallback(() => {
+	const onBlur = useCallback((e: NativeSyntheticEvent<TargetedEvent>) => {
+		console.log({ e })
 		setFocus(false)
 	}, [])
 	return (
 		<TouchableHighlight
-			style={[styles.focusableWrapper, focus ? styles.focused : null, extraStyle]}
+			style={[extraStyle ?? styles.focusableWrapper, focus ? focusedStyle ?? styles.focused : null]}
 			onPress={onPress}
 			onFocus={onFocus}
 			onBlur={onBlur}
 			ref={ref}
+			underlayColor="white"
+			hasTVPreferredFocus={initialFocus}
 		>
 			<>{children}</>
 		</TouchableHighlight>
@@ -45,7 +69,9 @@ const styles = StyleSheet.create({
 	},
 	focused: {
 		borderWidth: 2,
-		borderColor: 'red',
+		borderColor: 'black',
+		backgroundColor: 'white',
+		opacity: 80,
 	},
 	text: {
 		fontSize: 22,

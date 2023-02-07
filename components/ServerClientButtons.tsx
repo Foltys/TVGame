@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { View, StyleSheet, Text, useWindowDimensions } from 'react-native'
 import { SocketModuleServer } from '../modules/SocketModule'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParams } from '../App'
@@ -19,10 +19,10 @@ const ServerClientButtons = (props: HomeViewProps) => {
 
 	return (
 		<View style={styles.container}>
-			<FocusableButton style={styles.buttonContainer} onPress={handleStartServer} initialFocus>
+			<FocusableButton style={styles.buttonContainer} onPress={handleStartServer}>
 				<Text adjustsFontSizeToFit>Start Server</Text>
 			</FocusableButton>
-			<FocusableButton style={styles.buttonContainer} onPress={handleJoinClient}>
+			<FocusableButton style={styles.buttonContainer} onPress={handleJoinClient} initialFocus>
 				<Text adjustsFontSizeToFit>Join as Client</Text>
 			</FocusableButton>
 		</View>
@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'space-around',
+		backgroundColor: '#4E4B5C',
 	},
 	buttonContainer: {
 		width: '45%',

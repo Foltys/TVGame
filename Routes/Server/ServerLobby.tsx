@@ -77,7 +77,7 @@ const ServerLobby = ({ navigation }: ServerLobbyProps) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		backgroundColor: '#fff',
+		backgroundColor: '#4E4B5C',
 		alignItems: 'center',
 		justifyContent: 'center',
 	},

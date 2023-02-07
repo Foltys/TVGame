@@ -5,6 +5,8 @@ import { NavigationContainer, NavigatorScreenParams } from '@react-navigation/na
 import ServerNavigator, { ServerNavigatorStackParams } from './Routes/Server/ServerNavigator'
 import ClientNavigator, { ClientNavigatorStackParams } from './Routes/Client/ClientNavigator'
 
+import 'react-native/tvos-types.d'
+
 export type RootStackParams = {
 	Home: undefined
 	ServerNavigator: NavigatorScreenParams<ServerNavigatorStackParams>
